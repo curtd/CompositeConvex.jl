@@ -6,6 +6,9 @@ min_{x} h(c(x))
 ```
 where `h(z)` is a closed, convex function (with easy to project-onto level sets) and `c(x)` is a smooth mapping, often linear. 
 
+The full details of the algorithm are found in Ch. 4 of my PhD thesis, [available here](https://open.library.ubc.ca/collections/ubctheses/24/items/1.0355402). 
+
+
 If you find this work useful, please cite 
 
 ```
