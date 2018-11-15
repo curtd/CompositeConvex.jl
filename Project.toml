@@ -1,0 +1,9 @@
+name = "CompositeConvex.jl"
+uuid = "eb9cf9ca-e5dd-11e8-0410-bd56deb376ca"
+authors = ["Curt Da Silva <curt.dasilva@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+LazyAlgebra = "0e0f7edd-c8cc-5b06-be66-ea686f1bf57e"
+Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
+OptimPackNextGen = "b132a0d0-84c6-50b3-baad-5f8b1904065a"
