@@ -17,8 +17,8 @@ x = randn(m,n)
 y = similar(x)
 row_norms = t->reshape(sum(t.^2,dims=2).^(0.5),size(t,2))
 col_norms = t->reshape(sum(t.^2,dims=1).^(0.5),size(t,1))
-compute_norm_projection!(y,x,τ0,pqNorm{0,2}())
+compute_norm_projection!(y,x,τ0, pqNorm{0,2}())
 @test abs(norm(col_norms(y),0) - τ0) < 1e-2
 
-compute_norm_projection!(y,x,τ0,pqNorm{1,2}())
+compute_norm_projection!(y,x,τ0, pqNorm{1,2}())
 @test abs(norm(col_norms(y),1) - τ0) < 1e-2

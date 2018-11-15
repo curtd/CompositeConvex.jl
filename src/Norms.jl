@@ -20,19 +20,102 @@ struct pNorm{P} <: VectorNorm
     end
 end
 
+"""
+dual_norm(p::pNorm{P}) -> pNorm{Q}
+
+Computes the dual norm corresponding to a given vector p-norm, i.e., the value Q such that 
+
+```math 
+\dfrac{1}{P} + \dfrac{1}{Q} = 1
+```
+
+`P` can be any value greater than `0` and less than or equal to `Inf`.
+"""
 dual_norm(p::pNorm{P}) where {P} = pNorm{1/(1-1/P)}()
 dual_norm(p::pNorm{2}) = pNorm{2}()
 dual_norm(p::pNorm{1}) = pNorm{Inf}()
 dual_norm(p::pNorm{Inf}) = pNorm{1}()
 dual_norm(p::pNorm{0}) = error("The 0-norm is not a true norm and does not have a corresponding dual")
 
+
+"""
+compute_norm(v::Vector, p::pNorm{P}) -> Float64
+
+Computes the P-norm of v
+"""
 compute_norm(v::Vector, p::pNorm{P}) where {P} = LinearAlgebra.norm(v,P)
 
+"""
+    compute_norm_projection(x::Vector, τ, p::pNorm{P}) -> y::Vector 
+    
+    Variant of compute_norm_projection! that produces an output vector to store the projected vector
+
+    Computes the projection of the vector `x` onto level set of the p-norm specified by P, of size τ, i.e., solves the problem 
+
+    ```math
+        \min_{y} & 0.5*\|y - x\|_2^2 \\
+        \text{s.t.} & \; \|y\|_P \le \tau
+    ```
+
+    P can be one of 0, 1, 2, Inf or any real number with 0 < P < Inf. 
+
+    # Example 
+    ```jldoctest
+    julia> x = randn(5);
+    5-element Array{Float64,1}:
+     0.9270834427394729
+     0.5417380391296652
+     1.264305123889455
+     0.021179212004242474
+     2.002779212447857
+
+    julia> y = compute_norm_projection(x, 1, pNorm{1}())
+    5-element Array{Float64,1}:
+     0.0
+     0.0
+     0.130762955720799
+     0.0
+     0.869237044279201
+    ```
+"""
 function compute_norm_projection(x::Vector, τ, p::pNorm{P}) where {P} 
     y = similar(x)
     compute_norm_projection!(y,x,τ,p)
     return y
 end
+
+"""
+compute_norm_projection!(y::Vector, x::Vector, τ, p::pNorm{P}) -> y::Vector     
+
+    Computes the projection of the vector `x` onto level set of the p-norm specified by P, of size τ, i.e., solves the problem 
+
+    ```math
+        \min_{y} & 0.5*\|y - x\|_2^2 \\
+        \text{s.t.} & \; \|y\|_P \le \tau
+    ```
+    and stores the projected vector in the pre-allocated output y.
+
+    P can be one of 0, 1, 2, or Inf. 
+
+    # Example 
+    ```jldoctest
+    julia> x = randn(5);
+    5-element Array{Float64,1}:
+     0.9270834427394729
+     0.5417380391296652
+     1.264305123889455
+     0.021179212004242474
+     2.002779212447857
+
+    julia> y = similar(x); compute_norm_projection!(y, x, 1, pNorm{1}()); y
+    5-element Array{Float64,1}:
+     0.0
+     0.0
+     0.130762955720799
+     0.0
+     0.869237044279201
+    ```
+"""
 compute_norm_projection!(y::Vector, x::Vector, τ, p::pNorm{P}) where {P} = error("Not yet implemented for $(P)-norm")
 
 function compute_norm_projection!(y::Vector, x::Vector, τ::Integer, p::pNorm{0})
@@ -82,6 +165,9 @@ function compute_norm_projection!(y::Vector, x::Vector, τ::Real, p::pNorm{Inf})
     y[y .> c] = c 
     y[y .< -c] = -c
 end
+
+# The pq Norm of a matrix X applies the p-norm to each row of X, followed by the q-norm applied to each column of x
+# See, e.g., https://en.wikipedia.org/wiki/Matrix_norm 
 
 compute_row_norms(x) = reshape(sum(x.^2, dims=2).^(0.5),size(x,2))
 compute_column_norms(x) = reshape(sum(x.^2, dims=1).^(0.5),size(x,1))
@@ -174,8 +260,7 @@ function compute_norm_projection!(y::Matrix, x::Matrix, τ, pq::pqNorm{2,1})
 end
 
 
-
-
+# The p-Schatten Norm of a matrix X is simply the vector p-norm on the vector of singular values of X
 
 struct SchattenNorm{P} <: MatrixNorm 
     function SchattenNorm{P} where {P,Q}
@@ -203,14 +288,6 @@ function compute_norm_projection!(y::Matrix, x::Matrix, τ, p::SchattenNorm{P}) 
     y .= (F.U * Diagonal(s) * F.Vt)
     return 
 end
-
-
-struct InducedNorm <: MatrixNorm 
-    input_vector_norm_p::Integer
-    output_vector_norm_q::Integer
-end
-
-
 
 
 end
