@@ -23,14 +23,13 @@ end
 """
 dual_norm(p::pNorm{P}) -> pNorm{Q}
 
-Computes the dual norm corresponding to a given vector p-norm, i.e., the value Q such that 
+Computes the dual norm corresponding to a given vector p-norm, i.e., the value ``Q`` such that 
 
-```math 
-\dfrac{1}{P} + \dfrac{1}{Q} = 1
-```
+``\\dfrac{1}{P} + \\dfrac{1}{Q} = 1``
 
-`P` can be any value greater than `0` and less than or equal to `Inf`.
+``P`` should be such that ``0 < P ≤ ∞.``
 """
+
 dual_norm(p::pNorm{P}) where {P} = pNorm{1/(1-1/P)}()
 dual_norm(p::pNorm{2}) = pNorm{2}()
 dual_norm(p::pNorm{1}) = pNorm{Inf}()
@@ -52,10 +51,10 @@ compute_norm(v::Vector, p::pNorm{P}) where {P} = LinearAlgebra.norm(v,P)
 
     Computes the projection of the vector `x` onto level set of the p-norm specified by P, of size τ, i.e., solves the problem 
 
-    ```math
-        \min_{y} & 0.5*\|y - x\|_2^2 \\
-        \text{s.t.} & \; \|y\|_P \le \tau
-    ```
+    ``
+        \\min_{y} & 0.5*\\|y - x\\|_2^2 \\\\
+        \\text{s.t.} & \\; \\|y\\|_P \\le \\tau
+    ``
 
     P can be one of 0, 1, 2, Inf or any real number with 0 < P < Inf. 
 
@@ -87,15 +86,15 @@ end
 """
 compute_norm_projection!(y::Vector, x::Vector, τ, p::pNorm{P}) -> y::Vector     
 
-    Computes the projection of the vector `x` onto level set of the p-norm specified by P, of size τ, i.e., solves the problem 
+    Computes the projection of the vector ``x`` onto level set of the ``p``-norm specified by ``P```, of size ``τ```, i.e., solves the problem 
 
     ```math
-        \min_{y} & 0.5*\|y - x\|_2^2 \\
-        \text{s.t.} & \; \|y\|_P \le \tau
+        \\min_{y} & 0.5*\\|y - x\\|_2^2 \\\\
+        \\text{s.t.} & \\; \\|y\\|_P \\le \\tau
     ```
     and stores the projected vector in the pre-allocated output y.
 
-    P can be one of 0, 1, 2, or Inf. 
+    ``P``` can be one of ``0``, ``1``, ``2``, or Inf. 
 
     # Example 
     ```jldoctest
@@ -203,7 +202,7 @@ compute_norm(x::Matrix, pq::pqNorm{0,Inf}) = norm( squeeze(maximum(abs.(x),dims=
 compute_norm(x::Matrix, pq::pqNorm{Inf,0}) = norm( squeeze(maximum(abs.(x),dims=1)), 0)
 
 
-compute_norm_projection!(y::Matrix, x::Matrix, τ, pq::pqNorm{P,Q}) where {P,Q} = error("Not yet implemented for $(P,Q)-norm")
+compute_norm_projection!(y::Matrix, x::Matrix, τ, pq::pqNorm{P,Q}) where {P,Q} = error("Not yet implemented for ($(P),$(Q))-norm")
 
 function compute_norm_projection!(y::Matrix, x::Matrix, τ, pq::pqNorm{0,2}) 
     col_norms = compute_column_norms(x)
@@ -263,7 +262,7 @@ end
 # The p-Schatten Norm of a matrix X is simply the vector p-norm on the vector of singular values of X
 
 struct SchattenNorm{P} <: MatrixNorm 
-    function SchattenNorm{P} where {P,Q}
+    function SchattenNorm{P}() where {P}
         validate_p_value(P)
         new()
     end
