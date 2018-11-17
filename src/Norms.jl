@@ -118,6 +118,12 @@ compute_norm_projection!(y::Vector, x::Vector, τ, p::pNorm{P}) -> y::Vector
 compute_norm_projection!(y::Vector, x::Vector, τ, p::pNorm{P}) where {P} = error("Not yet implemented for $(P)-norm")
 
 function compute_norm_projection!(y::Vector, x::Vector, τ::Integer, p::pNorm{0})
+    @assert length(y) == length(x)
+    @assert τ ≥ 0
+    if τ == 0 
+        y .= 0.0
+        return 
+    end
     y .= x
     if norm(x,0) ≤ τ
         return
@@ -129,6 +135,12 @@ function compute_norm_projection!(y::Vector, x::Vector, τ::Integer, p::pNorm{0}
 end
 
 function compute_norm_projection!(y::Vector, x::Vector, τ::Real, p::pNorm{1})
+    @assert length(y) == length(x)
+    @assert τ ≥ 0
+    if τ == 0 
+        y .= 0.0
+        return 
+    end
     c = norm(x,1)
     if c ≤ τ
         y .= x
@@ -146,6 +158,12 @@ function compute_norm_projection!(y::Vector, x::Vector, τ::Real, p::pNorm{1})
 end
 
 function compute_norm_projection!(y::Vector, x::Vector, τ::Real, p::pNorm{2})
+    @assert length(y) == length(x)
+    @assert τ ≥ 0
+    if τ == 0 
+        y .= 0.0
+        return 
+    end
     c = norm(x,2)
     y .= x
     if c ≤ τ
@@ -156,6 +174,12 @@ function compute_norm_projection!(y::Vector, x::Vector, τ::Real, p::pNorm{2})
 end
 
 function compute_norm_projection!(y::Vector, x::Vector, τ::Real, p::pNorm{Inf})
+    @assert length(y) == length(x)
+    @assert τ ≥ 0
+    if τ == 0 
+        y .= 0.0
+        return 
+    end
     c = norm(x,Inf)
     y .= x 
     if c ≤ τ
